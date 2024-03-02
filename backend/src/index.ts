@@ -53,7 +53,7 @@ app.get("/api/registration", async (req, res) => {
 
 
 const PostRequest = z.object({
-  id: z.number(),
+ // id: z.number(),
   email: z.string().email(),
   password: z.string().min(5),
   confirmPassword: z.string().min(5),
@@ -66,6 +66,10 @@ app.post("/api/registration", async (req, res) => {
 
   const userData = await loadDb("users");
   if (!userData) return res.sendStatus(500);
+
+  const existingUser = userData.find(user => newUser.email === user.email)
+  if (existingUser)
+      return res.sendStatus(409);
 
   const id = Math.random();
   const isSuccessful = await saveDB("users", [...userData, { ...newUser, id }]);
